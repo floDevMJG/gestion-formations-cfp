@@ -107,10 +107,14 @@ app.get('/api/status', (req, res) => {
 
 // Servir les fichiers statiques en production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../gestion-formations-cfp-frontend/build')));
+  // Ne pas essayer de servir le frontend build car il n'existe pas
+  // Le frontend est déployé séparément
   
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../../gestion-formations-cfp-frontend/build', 'index.html'));
+    if (req.originalUrl.startsWith('/api/')) {
+      return res.status(404).json({ error: 'Route API non trouvée' });
+    }
+    res.status(404).json({ error: 'Backend API - Frontend non disponible ici' });
   });
 }
 
