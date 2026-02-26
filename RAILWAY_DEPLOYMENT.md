@@ -21,7 +21,39 @@ Railway va automatiquement détecter trois services:
 - **Frontend** (React)
 - **MySQL** (base de données)
 
-### 3. Variables d'environnement
+### 4. Configuration MySQL
+
+#### 4.1. Ajout du service MySQL
+Railway va automatiquement détecter et configurer MySQL grâce au fichier `railway.toml`:
+
+```toml
+[services]
+  [services.mysql]
+    sourceDir = "/"
+    image = "mysql:8.0"
+    healthcheckPath = "/health"
+    healthcheckTimeout = 100
+    restartPolicyType = "ON_FAILURE"
+    restartPolicyMaxRetries = 10
+```
+
+#### 4.2. Variables d'environnement MySQL
+Railway créera automatiquement ces variables:
+```
+RAILWAY_MYSQL_HOST
+RAILWAY_MYSQL_USER  
+RAILWAY_MYSQL_PASSWORD
+RAILWAY_MYSQL_DATABASE
+RAILWAY_MYSQL_PORT
+```
+
+#### 4.3. Initialisation de la base de données
+Le script `database/init-database.sql` sera utilisé pour initialiser les tables:
+- Tables des congés et permissions
+- Vues et procédures stockées
+- Triggers pour les statistiques
+
+### 5. Variables d'environnement
 
 #### Pour le service Backend:
 ```
@@ -48,15 +80,15 @@ RAILWAY_MYSQL_DATABASE
 RAILWAY_MYSQL_PORT
 ```
 
-### 4. Déploiement automatique
+### 6. Déploiement automatique
 
 Une fois configuré, Railway déploiera automatiquement:
 - Le backend Node.js avec le Dockerfile
 - Le frontend React avec nginx
-- La base de données MySQL
+- La base de données MySQL avec les tables initialisées
 - Appliquera les variables d'environnement
 
-### 5. Vérification du déploiement
+### 7. Vérification du déploiement
 
 #### Backend:
 1. **Health Check**: Visitez `https://votre-backend.railway.app/api/health`
@@ -67,13 +99,19 @@ Une fois configuré, Railway déploiera automatiquement:
 1. **Application**: Visitez `https://votre-frontend.railway.app`
 2. **Connexion API**: Vérifiez que le frontend communique avec le backend
 
-### 6. Dépannage
+#### MySQL:
+1. **Connexion**: Vérifiez la connexion depuis le backend
+2. **Tables**: Confirmez que toutes les tables sont créées
+3. **Données**: Vérifiez l'import des données initiales si nécessaire
+
+### 8. Dépannage
 
 #### Problèmes courants:
 - **CORS**: Vérifiez que `FRONTEND_URL` est correctement configuré dans le backend
 - **Base de données**: Les variables MySQL doivent être correctement liées au backend
 - **Email**: Configurez SendGrid si nécessaire pour les fonctionnalités d'email
 - **API Frontend**: Assurez-vous que `REACT_APP_API_URL` pointe vers le bon backend
+- **MySQL Connection**: Vérifiez que les variables d'environnement MySQL sont bien injectées
 
 #### Commandes utiles:
 ```bash
@@ -85,22 +123,25 @@ railway restart
 
 # Vérifier les variables d'environnement
 railway variables
+
+# Se connecter à MySQL pour vérification
+railway mysql
 ```
 
-### 7. Domaine personnalisé (optionnel)
+### 9. Domaine personnalisé (optionnel)
 
 1. Dans Railway > Settings > Domains
 2. Ajoutez votre domaine personnalisé pour le frontend et/ou backend
 3. Configurez les DNS comme indiqué
 
-### 8. Backup de la base de données
+### 10. Backup de la base de données
 
 Railway propose des backups automatiques. Pour exporter manuellement:
 ```bash
 railway mysql:dump > backup.sql
 ```
 
-### 9. Déploiement en production
+### 11. Déploiement en production
 
 #### Étapes finales:
 1. **Tester** toutes les fonctionnalités
@@ -114,8 +155,10 @@ railway mysql:dump > backup.sql
 - `backend/.env.example` - Variables d'environnement pour Railway
 - `backend/src/app.js` - Health check endpoint, CORS dynamique, logs de diagnostic
 - `backend/Dockerfile` - Configuration optimisée pour Railway
-- `backend/railway.toml` - Configuration des services Railway
+- `backend/railway.toml` - Configuration des services Railway y compris MySQL
 - `backend/start-simple.js` - Script de test sans base de données
+- `backend/railway-mysql-init.sql` - Script d'initialisation MySQL
+- `backend/database/init-database.sql` - Script principal d'initialisation
 
 ### Frontend:
 - `frontend/.env.example` - Variables d'environnement pour Railway
@@ -123,6 +166,10 @@ railway mysql:dump > backup.sql
 - `frontend/nginx.conf` - Configuration nginx optimisée
 - `frontend/railway.toml` - Configuration des services Railway
 - `frontend/package.json` - Scripts et dépendances additionnels
+
+### Base de données:
+- `backend/database/conges_permissions_mysql.sql` - Tables MySQL complètes
+- `backend/database/init-database.sql` - Script d'initialisation principal
 
 ## Architecture de déploiement
 
