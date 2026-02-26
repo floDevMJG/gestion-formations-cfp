@@ -32,7 +32,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "serve": "serve -s build -l 3000"
   },
   "browserslist": {
     "production": [
@@ -49,6 +50,7 @@
   "proxy": "http://localhost:5000",
   "devDependencies": {
     "cross-env": "^10.1.0",
-    "postcss-cli": "^11.0.1"
+    "postcss-cli": "^11.0.1",
+    "serve": "^14.2.1"
   }
 }
