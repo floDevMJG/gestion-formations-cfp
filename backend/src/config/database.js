@@ -26,12 +26,19 @@ const config = {
     logging: false
   },
   production: {
-    username: process.env.PROD_DB_USER,
-    password: process.env.PROD_DB_PASSWORD,
-    database: process.env.PROD_DB_NAME,
-    host: process.env.PROD_DB_HOST,
+    username: process.env.RAILWAY_MYSQL_USER || process.env.PROD_DB_USER,
+    password: process.env.RAILWAY_MYSQL_PASSWORD || process.env.PROD_DB_PASSWORD,
+    database: process.env.RAILWAY_MYSQL_DATABASE || process.env.PROD_DB_NAME,
+    host: process.env.RAILWAY_MYSQL_HOST || process.env.PROD_DB_HOST,
+    port: process.env.RAILWAY_MYSQL_PORT || 3306,
     dialect: 'mysql',
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
     pool: {
       max: 5,
       min: 0,
