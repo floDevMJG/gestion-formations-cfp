@@ -2,7 +2,7 @@
   builder = "NIXPACKS"
 
 [deploy]
-  startCommand = "npm run start-simple"
+  startCommand = "npm start"
   healthcheckPath = "/api/health"
   healthcheckTimeout = 100
   restartPolicyType = "ON_FAILURE"
@@ -11,7 +11,7 @@
 [services]
   [services.web]
     sourceDir = "/"
-    startCommand = "npm run start-simple"
+    startCommand = "npm start"
     healthcheckPath = "/api/health"
     healthcheckTimeout = 100
     restartPolicyType = "ON_FAILURE"
