@@ -201,6 +201,11 @@ const createDefaultUser = async () => {
 // Démarrage du serveur
 const startServer = async () => {
   try {
+    console.log('🔍 Tentative de connexion à la base de données...');
+    console.log(`📍 Host: ${process.env.DB_HOST || process.env.MYSQLHOST || 'localhost'}`);
+    console.log(`👤 User: ${process.env.DB_USER || process.env.MYSQLUSER || 'root'}`);
+    console.log(`🗄️  Database: ${process.env.DB_NAME || process.env.MYSQLDATABASE || 'gestion_formations'}`);
+    
     await sequelize.authenticate();
     console.log('✅ Connexion à la base de données établie avec succès.');
 
@@ -257,9 +262,10 @@ const startServer = async () => {
     // Créer un utilisateur admin par défaut
     await createDefaultUser();
     
-    app.listen(PORT, () => {
-      console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Serveur démarré sur le port ${PORT}`);
       console.log(`🌍 Environnement: ${process.env.NODE_ENV || 'développement'}`);
+      console.log(`📊 Health check disponible sur /api/health`);
     });
   } catch (error) {
     console.error('❌ Erreur lors du démarrage du serveur:', error.message);
