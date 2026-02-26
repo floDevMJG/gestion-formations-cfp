@@ -27,7 +27,12 @@ const app = express();
 
 // Configuration CORS
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'https://formations-cfp.netlify.app',
+    /\.netlify\.app$/
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
