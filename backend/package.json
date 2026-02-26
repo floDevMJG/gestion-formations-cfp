@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node src/app.js",
-    "start-simple": "node start-simple.js",
+    "start-simple": "node src/app.js",
     "dev": "nodemon src/app.js",
     "create-admin": "node create-admin.js",
     "fix-sync": "node fix-sync.js"
