@@ -48,12 +48,29 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
 
 // Health check endpoint pour Railway
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  let dbStatus = 'non_testee';
+  
+  // Tester la connexion à la base de données
+  try {
+    await sequelize.authenticate();
+    dbStatus = 'connectee';
+  } catch (error) {
+    dbStatus = `erreur: ${error.message}`;
+  }
+  
   res.status(200).json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    port: PORT
+    port: PORT,
+    database: dbStatus,
+    mysql_vars: {
+      host: process.env.RAILWAY_MYSQL_HOST ? 'configure' : 'manquant',
+      user: process.env.RAILWAY_MYSQL_USER ? 'configure' : 'manquant',
+      database: process.env.RAILWAY_MYSQL_DATABASE ? 'configure' : 'manquant',
+      port: process.env.RAILWAY_MYSQL_PORT || 'manquant'
+    }
   });
 });
 
