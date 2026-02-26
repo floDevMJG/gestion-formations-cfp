@@ -26,11 +26,11 @@ const config = {
     logging: false
   },
   production: {
-    username: process.env.RAILWAY_MYSQL_USER || process.env.PROD_DB_USER,
-    password: process.env.RAILWAY_MYSQL_PASSWORD || process.env.PROD_DB_PASSWORD,
-    database: process.env.RAILWAY_MYSQL_DATABASE || process.env.PROD_DB_NAME,
-    host: process.env.RAILWAY_MYSQL_HOST || process.env.PROD_DB_HOST,
-    port: process.env.RAILWAY_MYSQL_PORT || 3306,
+    username: process.env.RAILWAY_MYSQL_USER || process.env.MYSQLUSER || process.env.PROD_DB_USER,
+    password: process.env.RAILWAY_MYSQL_PASSWORD || process.env.MYSQLPASSWORD || process.env.PROD_DB_PASSWORD,
+    database: process.env.RAILWAY_MYSQL_DATABASE || process.env.MYSQLDATABASE || process.env.PROD_DB_NAME,
+    host: process.env.RAILWAY_MYSQL_HOST || process.env.MYSQLHOST || process.env.PROD_DB_HOST,
+    port: process.env.RAILWAY_MYSQL_PORT || process.env.MYSQLPORT || 3306,
     dialect: 'mysql',
     logging: false,
     dialectOptions: {
