@@ -14,3 +14,15 @@
     healthcheckTimeout = 100
     restartPolicyType = "ON_FAILURE"
     restartPolicyMaxRetries = 10
+
+# Configuration MySQL
+[[services]]
+  name = "mysql"
+  
+[services.mysql]
+  sourceDir = "/"
+  image = "mysql:8.0"
+  
+[services.mysql.env]
+  MYSQL_ROOT_PASSWORD = "root_password_123"
+  MYSQL_DATABASE = "gestion_formations"
