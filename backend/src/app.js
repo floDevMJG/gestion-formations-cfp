@@ -74,6 +74,15 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
+// Route de test simple
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Backend CFP is running!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -81,78 +90,15 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/formations', formationsRoutes);
 app.use('/api/conges-permissions', congesPermissionsRoutes);
 app.use('/api/formateur', formateurRoutes);
-app.use('/api/inscriptions', inscriptionsRoutes); // Ajout de la route des inscriptions
-app.use('/api/ateliers', ateliersRoutes); // Ateliers publics et protégés
-app.use('/api/etudiants', etudiantsRoutes); // Inscriptions par étudiant
-app.use('/api/cours', coursRoutes); // PDF et emploi du temps
-app.use('/api/notifications', notificationsRoutes); // Notifications utilisateurs/admin
+app.use('/api/inscriptions', inscriptionsRoutes);
+app.use('/api/ateliers', ateliersRoutes);
+app.use('/api/etudiants', etudiantsRoutes);
+app.use('/api/cours', coursRoutes);
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api/paiements', paiementsRoutes);
 app.use('/api/test-email', testEmailRoutes);
 // Routes OAuth Google
 app.use('/api/auth', require('./routes/googleAuth'));
-
-// Page d'accueil informative
-app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="fr">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>API Gestion des Formations</title>
-        <style>
-          body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; color: #2c3e50; }
-          h1 { color: #34495e; }
-          .endpoint { background: #f8f9fa; padding: 12px 16px; border-radius: 6px; margin: 10px 0; border-left: 4px solid #3498db; }
-          .method { display: inline-block; padding: 2px 8px; border-radius: 4px; color: #fff; font-weight: 600; font-size: 12px; margin-right: 8px; }
-          .get { background: #2ecc71; } .post { background: #3498db; } .put { background: #f39c12; } .delete { background: #e74c3c; }
-          a { color: #2980b9; text-decoration: none; } a:hover { text-decoration: underline; }
-        </style>
-      </head>
-      <body>
-        <h1>API Gestion des Formations</h1>
-        <p>Bienvenue. Le serveur est en cours d'exécution. Endpoints principaux:</p>
-        <div class="endpoint"><span class="method get">GET</span><a href="/api/status">/api/status</a> - Statut API</div>
-        <div class="endpoint"><span class="method post">POST</span>/api/auth/login - Connexion</div>
-        <div class="endpoint"><span class="method post">POST</span>/api/auth/register - Inscription</div>
-        <div class="endpoint"><span class="method get">GET</span>/api/formations - Formations</div>
-        <div class="endpoint"><span class="method get">GET</span>/api/admin/stats - Statistiques (admin)</div>
-        <div class="endpoint"><span class="method get">GET</span>/api/inscriptions - Inscriptions (admin)</div>
-      </body>
-    </html>
-  `);
-});
-
-// Route temporaire pour les cours (solution de contournement)
-app.get('/api/cours', async (req, res) => {
-  try {
-    console.log('📚 Route /api/cours appelée');
-    const { Cours, Formation, User } = require('./models');
-    
-    const cours = await Cours.findAll({
-      where: { type: 'pdf' },
-      include: [
-        {
-          model: Formation,
-          as: 'formation',
-          attributes: ['id', 'titre']
-        },
-        {
-          model: User,
-          as: 'Formateur',
-          attributes: ['id', 'nom', 'prenom']
-        }
-      ],
-      order: [['createdAt', 'DESC']]
-    });
-
-    console.log(`✅ ${cours.length} cours trouvés`);
-    res.status(200).json(cours);
-  } catch (error) {
-    console.error('❌ Erreur:', error);
-    res.status(500).json({ message: 'Erreur serveur', error: error.message });
-  }
-});
 
 // Route de test
 app.get('/api/status', (req, res) => {
@@ -186,8 +132,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Configuration du port (déjà défini plus haut)
-
 // Fonction pour créer un utilisateur admin par défaut
 const createDefaultUser = async () => {
   try {
@@ -218,72 +162,34 @@ const createDefaultUser = async () => {
 // Démarrage du serveur
 const startServer = async () => {
   try {
-    console.log('🔍 Tentative de connexion à la base de données...');
-    console.log(`📍 Host: ${process.env.DB_HOST || process.env.MYSQLHOST || 'localhost'}`);
-    console.log(`👤 User: ${process.env.DB_USER || process.env.MYSQLUSER || 'root'}`);
-    console.log(`🗄️  Database: ${process.env.DB_NAME || process.env.MYSQLDATABASE || 'gestion_formations'}`);
+    console.log('🔍 Démarrage du serveur...');
     
-    await sequelize.authenticate();
-    console.log('✅ Connexion à la base de données établie avec succès.');
-
-    try {
-      const models = require('./models');
-      if (models && models.sequelize && models.sequelize.sync) {
-        await models.sequelize.sync();
-        console.log('✅ Schéma synchronisé');
-      }
-    } catch (syncAllErr) {
-      console.warn('⚠️ Synchronisation du schéma échouée:', syncAllErr.message);
-    }
-
-    // S'assurer que les tables indispensables existent sans altérer les existantes
-    try {
-      const { Atelier } = require('./models');
-      if (Atelier && Atelier.sync) {
-        await Atelier.sync(); // crée la table si elle n'existe pas
-        console.log('✅ Table Ateliers vérifiée/créée si nécessaire.');
-      }
-    } catch (syncErr) {
-      console.error('❌ Erreur lors de la vérification/création de la table Ateliers:', syncErr.message);
-    }
-
-    // Vérifier/ajouter les colonnes de vérification email sur Users si absentes
-    try {
-      const [results] = await sequelize.query(`
-        SELECT COLUMN_NAME 
-        FROM INFORMATION_SCHEMA.COLUMNS 
-        WHERE TABLE_SCHEMA = DATABASE() 
-          AND TABLE_NAME = 'Users' 
-          AND COLUMN_NAME IN ('emailVerified','emailVerificationCode','emailVerificationExpires')
-      `);
-      const existing = new Set(results.map(r => r.COLUMN_NAME));
-      const addEmailVerified = !existing.has('emailVerified');
-      const addCode = !existing.has('emailVerificationCode');
-      const addExpires = !existing.has('emailVerificationExpires');
-      if (addEmailVerified) {
-        await sequelize.query(`ALTER TABLE Users ADD COLUMN emailVerified TINYINT(1) NOT NULL DEFAULT 0`);
-        console.log('✅ Colonne emailVerified ajoutée');
-      }
-      if (addCode) {
-        await sequelize.query(`ALTER TABLE Users ADD COLUMN emailVerificationCode VARCHAR(32) NULL`);
-        console.log('✅ Colonne emailVerificationCode ajoutée');
-      }
-      if (addExpires) {
-        await sequelize.query(`ALTER TABLE Users ADD COLUMN emailVerificationExpires DATETIME NULL`);
-        console.log('✅ Colonne emailVerificationExpires ajoutée');
-      }
-    } catch (colErr) {
-      console.warn('⚠️ Vérification/ajout des colonnes Users échouée:', colErr.message);
-    }
-
-    // Créer un utilisateur admin par défaut
-    await createDefaultUser();
-    
+    // Démarrer le serveur immédiatement
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Serveur démarré sur le port ${PORT}`);
       console.log(`🌍 Environnement: ${process.env.NODE_ENV || 'développement'}`);
       console.log(`📊 Health check disponible sur /api/health`);
+      console.log(`🏠 Route racine disponible sur /`);
     });
+
+    // Tester la connexion BDD en arrière-plan
+    console.log('🔍 Tentative de connexion à la base de données...');
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Connexion à la base de données établie');
+      
+      // Synchroniser les modèles
+      await sequelize.sync({ alter: true });
+      console.log('📚 Modèles synchronisés');
+      
+      // Créer un utilisateur admin par défaut
+      await createDefaultUser();
+      
+    } catch (dbError) {
+      console.error('❌ Erreur de connexion à la base de données:', dbError.message);
+      console.log('⚠️ Le serveur continue sans base de données');
+    }
+    
   } catch (error) {
     console.error('❌ Erreur lors du démarrage du serveur:', error.message);
     process.exit(1);
