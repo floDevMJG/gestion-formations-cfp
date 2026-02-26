@@ -1,0 +1,35 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "nom": "Admin",
+      "email": "admin@example.com",
+      "password": "admin123",
+      "role": "admin",
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "formations": [
+    {
+      "id": "1",
+      "titre": "Charpenterie Marine",
+      "description": "Formation complète en charpenterie navale",
+      "duree": "6 mois",
+      "placesDisponibles": 15,
+      "dateDebut": "2023-03-01",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "createdBy": "1"
+    },
+    {
+      "id": "2",
+      "titre": "Soudure TIG",
+      "description": "Apprentissage des techniques de soudure TIG",
+      "duree": "3 mois",
+      "placesDisponibles": 10,
+      "dateDebut": "2023-04-01",
+      "createdAt": "2023-01-02T00:00:00.000Z",
+      "createdBy": "1"
+    }
+  ],
+  "inscriptions": []
+}

@@ -1,0 +1,133 @@
+const { Sequelize, DataTypes } = require('sequelize');
+const cfg = require('./config');
+const sequelize = new Sequelize(cfg.dbName, cfg.dbUser, cfg.dbPass, { host: cfg.dbHost, dialect: 'mysql' });
+
+const User = sequelize.define('User', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  nom: DataTypes.STRING,
+  prenom: { type: DataTypes.STRING, allowNull: true },
+  email: { type: DataTypes.STRING, unique: true },
+  password: DataTypes.STRING,
+  role: DataTypes.STRING,
+  statut: { 
+    type: DataTypes.STRING, 
+    defaultValue: 'en_attente' 
+  } // 'en_attente', 'valide', 'rejete'
+});
+
+const Message = sequelize.define('Message', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  content: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+  read: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  senderId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
+  },
+  recipientId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
+  }
+}, {
+  tableName: 'messages',
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['senderId', 'recipientId', 'createdAt']
+    },
+    {
+      fields: ['recipientId', 'read']
+    }
+  ]
+});
+
+// Définition des relations
+User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
+User.hasMany(Message, { foreignKey: 'recipientId', as: 'receivedMessages' });
+Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+Message.belongsTo(User, { foreignKey: 'recipientId', as: 'recipient' });
+
+const Formation = sequelize.define('Formation', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  titre: DataTypes.STRING,
+  description: DataTypes.TEXT,
+  duree: DataTypes.STRING,
+  niveau: { type: DataTypes.STRING, allowNull: true },
+  places: { type: DataTypes.INTEGER, allowNull: true }
+});
+
+const Inscription = sequelize.define('Inscription', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  userId: DataTypes.INTEGER,
+  formationId: DataTypes.INTEGER,
+  dateInscription: DataTypes.DATE,
+  montant: DataTypes.DECIMAL(10, 2),
+  methodePaiement: DataTypes.STRING, // 'orange_money', 'mvola', 'airtel_money'
+  numeroTelephone: DataTypes.STRING,
+  statutPaiement: { type: DataTypes.STRING, defaultValue: 'en_attente' }, // 'en_attente', 'paye', 'annule'
+  referencePaiement: DataTypes.STRING
+});
+
+// Modèle Cours (Emploi du temps)
+const Cours = sequelize.define('Cours', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  formationId: DataTypes.INTEGER,
+  formateurId: DataTypes.INTEGER,
+  titre: DataTypes.STRING,
+  description: DataTypes.TEXT,
+  date: DataTypes.DATE,
+  heureDebut: DataTypes.TIME,
+  heureFin: DataTypes.TIME,
+  salle: DataTypes.STRING,
+  type: { type: DataTypes.STRING, defaultValue: 'cours' } // 'cours', 'td', 'tp', 'examen'
+});
+
+// Modèle Presence
+const Presence = sequelize.define('Presence', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  coursId: DataTypes.INTEGER,
+  userId: DataTypes.INTEGER,
+  statut: { type: DataTypes.STRING, defaultValue: 'absent' }, // 'present', 'absent', 'retard', 'justifie'
+  date: DataTypes.DATE,
+  remarque: DataTypes.TEXT
+});
+
+// Relations
+User.hasMany(Inscription, { foreignKey: 'userId' });
+Formation.hasMany(Inscription, { foreignKey: 'formationId' });
+Inscription.belongsTo(User, { foreignKey: 'userId' });
+Inscription.belongsTo(Formation, { foreignKey: 'formationId' });
+
+// Relations Cours
+Formation.hasMany(Cours, { foreignKey: 'formationId' });
+User.hasMany(Cours, { foreignKey: 'formateurId', as: 'CoursEnseigne' });
+Cours.belongsTo(Formation, { foreignKey: 'formationId' });
+Cours.belongsTo(User, { foreignKey: 'formateurId', as: 'Formateur' });
+
+// Relations Presence
+Cours.hasMany(Presence, { foreignKey: 'coursId' });
+User.hasMany(Presence, { foreignKey: 'userId' });
+Presence.belongsTo(Cours, { foreignKey: 'coursId' });
+Presence.belongsTo(User, { foreignKey: 'userId' });
+
+module.exports = { sequelize, User, Message, Formation, Inscription, Cours, Presence };

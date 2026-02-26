@@ -1,0 +1,27 @@
+# Configuration de la base de données
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=
+DB_NAME=gestion_formations
+
+# Configuration JWT
+JWT_SECRET=votre_secret_jwt_tres_securise
+JWT_EXPIRES_IN=30d
+
+# Configuration Email SendGrid (NOUVEAU)
+SENDGRID_API_KEY=SG.votre_cle_api_sendgrid_ici
+EMAIL_FROM=no-reply@cfp-charpentier-marine.com
+
+# Configuration Email Gmail (backup - optionnel)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=votre_email@gmail.com
+EMAIL_PASS=votre_mot_de_passe
+
+# Configuration serveur
+PORT=5000
+NODE_ENV=development
+
+# URL du frontend
+FRONTEND_URL=http://localhost:3000

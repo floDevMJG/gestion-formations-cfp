@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+body { 
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  @apply bg-app-gradient;
+}
+
+:root {
+  --app-primary: #2563eb;
+  --app-secondary: #7c3aed;
+  --app-accent: #06b6d4;
+}
+
+.bg-app-gradient {
+  background-image: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(124,58,237,0.15));
+}
+
+.card-glass {
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: saturate(180%) blur(8px);
+}
+
+.hover-lift {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeInUp 400ms ease both;
+}
+
+@keyframes floatSoft {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+.animate-float {
+  animation: floatSoft 3s ease-in-out infinite;
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-soft {
+  animation: pulseSoft 2.5s ease-in-out infinite;
+}
+
+/* SweetAlert2 Custom Styles */
+.swal2-container {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.swal2-popup {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(8px);
+}
+
+.swal2-toast {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: saturate(180%) blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.75rem !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+.swal2-success {
+  background-color: #10b981 !important;
+}
+
+.swal2-error {
+  background-color: #ef4444 !important;
+}
+
+.swal2-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #1f2937 !important;
+}
+
+.swal2-html-container {
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
+  margin-top: 0.25rem !important;
+}
+
+.swal2-timer-progress-bar {
+  background: linear-gradient(to right, #2563eb, #7c3aed) !important;
+  height: 3px !important;
+}
+
+/* Animation pour les toasts */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.swal2-toast.swal2-show {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.swal2-toast.swal2-hide {
+  animation: slideInRight 0.3s ease-out reverse;
+}

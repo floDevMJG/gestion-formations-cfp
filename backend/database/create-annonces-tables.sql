@@ -1,0 +1,19 @@
+-- Tables d'annonces pour formateurs et apprenants
+CREATE TABLE IF NOT EXISTS `annonces_formateurs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `titre` VARCHAR(255) NOT NULL,
+  `contenu` TEXT NOT NULL,
+  `created_by` INT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `annonces_apprenants` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `titre` VARCHAR(255) NOT NULL,
+  `contenu` TEXT NOT NULL,
+  `created_by` INT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
