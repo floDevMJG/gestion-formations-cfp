@@ -16,13 +16,25 @@ app.use((req, res, next) => {
 // Servir les fichiers statiques
 app.use(express.static(path.join(__dirname, 'build')));
 
-// Route de health check
+// Route de health check (compatible avec Railway)
 app.get('/health', (req, res) => {
   console.log('💓 Health check appelé');
   res.status(200).json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    service: 'frontend'
+    service: 'frontend',
+    port: PORT
+  });
+});
+
+// Route racine pour health check alternatif
+app.get('/', (req, res) => {
+  console.log('🏠 Route racine appelée');
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    service: 'frontend',
+    port: PORT
   });
 });
 
