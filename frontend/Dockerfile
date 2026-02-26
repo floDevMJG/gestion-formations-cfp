@@ -15,17 +15,19 @@ COPY . .
 # Construire l'application
 RUN npm run build
 
-# Étape 2: Production avec nginx
-FROM nginx:alpine
+# Étape 2: Production avec Node.js
+FROM node:18-alpine
+
+WORKDIR /app
 
 # Copier le build depuis l'étape précédente
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/build ./build
 
-# Copier la configuration nginx simple
-COPY nginx-simple.conf /etc/nginx/conf.d/default.conf
+# Copier le serveur statique
+COPY serve-static.js .
 
-# Exposer le port 80
-EXPOSE 80
+# Exposer le port 3000
+EXPOSE 3000
 
-# Démarrer nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Démarrer le serveur
+CMD ["npm", "run", "serve"]
