@@ -37,7 +37,9 @@ const config = {
       ssl: {
         require: true,
         rejectUnauthorized: false
-      }
+      },
+      // Forcer IPv4
+      family: 4
     },
     pool: {
       max: 5,
