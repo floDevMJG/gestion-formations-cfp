@@ -417,7 +417,7 @@ export default function Login() {
             {/* Connexion avec Google */}
             <div className="space-y-3">
               <button
-                onClick={() => window.location.href = 'http://localhost:5000/api/auth/google?role=apprenant'}
+                onClick={() => window.location.href = `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/auth/google?role=apprenant`}
                 className="w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
               >
                 <FcGoogle className="mr-2" />
@@ -482,14 +482,14 @@ export default function Login() {
               </div>
               <div className="space-y-3">
                 <button
-                  onClick={() => { window.location.href = 'http://localhost:5000/api/auth/google?role=apprenant'; }}
+                  onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/auth/google?role=apprenant`; }}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 hover:bg-gray-50 transition flex items-center justify-center gap-2"
                 >
                   <FiUsers className="text-gray-600" />
                   <span>Apprenant</span>
                 </button>
                 <button
-                  onClick={() => { window.location.href = 'http://localhost:5000/api/auth/google?role=formateur'; }}
+                  onClick={() => { window.location.href = `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/auth/google?role=formateur`; }}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 hover:bg-gray-50 transition flex items-center justify-center gap-2"
                 >
                   <FiBookOpen className="text-gray-600" />
