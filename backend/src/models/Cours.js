@@ -10,14 +10,14 @@ module.exports = (sequelize) => {
     formationId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Formations',
+        model: 'formations',
         key: 'id'
       }
     },
     formateurId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Users',
+        model: 'users',
         key: 'id'
       }
     },
@@ -35,7 +35,7 @@ module.exports = (sequelize) => {
     fichierUrl: DataTypes.STRING,
     fichierNom: DataTypes.STRING
   }, {
-    tableName: 'Cours',
+    tableName: 'cours',
     timestamps: true
   });
 

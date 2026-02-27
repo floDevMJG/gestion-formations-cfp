@@ -86,7 +86,7 @@ module.exports = (sequelize) => {
       comment: 'Token de rafraîchissement Google'
     }
   }, {
-    tableName: 'Users',
+    tableName: 'users',
     timestamps: true
   });
 

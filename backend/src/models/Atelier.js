@@ -57,12 +57,12 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: true, // Peut être null si l'atelier n'est pas directement lié à un formateur (ex: atelier général)
       references: {
-        model: 'Users',
+        model: 'users',
         key: 'id'
       }
     }
   }, {
-    tableName: 'Ateliers',
+    tableName: 'ateliers',
     timestamps: true
   });
 

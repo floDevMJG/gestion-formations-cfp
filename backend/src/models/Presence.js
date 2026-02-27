@@ -10,14 +10,14 @@ module.exports = (sequelize) => {
     coursId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Cours',
+        model: 'cours',
         key: 'id'
       }
     },
     userId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Users',
+        model: 'users',
         key: 'id'
       }
     },
@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
     date: DataTypes.DATE,
     remarque: DataTypes.TEXT
   }, {
-    tableName: 'Presences',
+    tableName: 'presences',
     timestamps: true
   });
 
