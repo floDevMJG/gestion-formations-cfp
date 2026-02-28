@@ -415,8 +415,9 @@ const validateUser = async (req, res) => {
     user.statut = 'valide';
 
     // Si c'est un formateur, générer un code spécial
+    let codeFormateur = null;
     if (user.role === 'formateur') {
-      const codeFormateur = generateFormateurCode();
+      codeFormateur = generateFormateurCode();
       user.codeFormateur = codeFormateur;
       console.log(`🔢 Code formateur généré: ${codeFormateur} pour ${user.email}`);
 
@@ -428,60 +429,18 @@ const validateUser = async (req, res) => {
         console.warn('⚠️ Erreur lors de l\'envoi de la notification au formateur:', notifyError.message);
         // Ne pas bloquer la validation si la notification échoue
       }
-
-      // Envoi d'email au formateur avec le code
-      try {
-        console.log(`📧 Envoi d'email de validation au formateur ${user.email}...`);
-        await sendFormateurValidatedEmail({
-          email: user.email,
-          nom: user.nom,
-          prenom: user.prenom,
-          codeFormateur,
-          adminMessage: message
-        });
-        console.log(`✅ Email de validation envoyé avec succès à ${user.email}`);
-      } catch (mailError) {
-        console.error('❌ Erreur lors de l\'envoi de l\'email de validation formateur:', mailError.message);
-        console.error('📄 Détails erreur:', {
-          message: mailError.message,
-          code: mailError.code,
-          command: mailError.command
-        });
-        // Ne pas bloquer la validation si l'email échoue
-      }
-
-      console.log(`📋 Code formateur généré pour ${user.email}: ${codeFormateur}`);
-      console.log(`📝 Message admin: ${message || 'Aucun message'}`);
-    } else if (user.role === 'apprenant') {
-      // Envoi d'email à l'apprenant validé
-      try {
-        console.log(`📧 Envoi d'email de validation à l'apprenant ${user.email}...`);
-        await sendApprenantValidatedEmail({
-          email: user.email,
-          nom: user.nom,
-          prenom: user.prenom
-        });
-        console.log(`✅ Email de validation envoyé avec succès à l'apprenant ${user.email}`);
-      } catch (mailError) {
-        console.error('❌ Erreur lors de l\'envoi de l\'email de validation apprenant:', mailError.message);
-        console.error('📄 Détails erreur:', {
-          message: mailError.message,
-          code: mailError.code,
-          command: mailError.command
-        });
-        // Ne pas bloquer la validation si l'email échoue
-      }
     }
 
-    console.log(`💾 Sauvegarde de l'utilisateur ${user.email} avec statut: ${user.statut}, codeFormateur: ${user.codeFormateur || 'N/A'}`);
+    // Sauvegarder l'utilisateur AVANT d'envoyer l'email
+    console.log(`💾 Sauvegarde de l'utilisateur ${user.email} avec statut: ${user.statut}, codeFormateur: ${codeFormateur || 'N/A'}`);
     await user.save();
     console.log(`✅ Utilisateur ${user.email} sauvegardé avec succès`);
-    console.log(`🎉 Utilisateur ${user.email} validé avec succès`);
 
     const userResponse = user.toJSON();
     delete userResponse.password;
 
-    console.log(`📤 Réponse de validation - User:`, {
+    // Envoyer la réponse API IMMÉDIATEMENT
+    console.log(`📤 Réponse de validation envoyée - User:`, {
       id: userResponse.id,
       email: userResponse.email,
       role: userResponse.role,
@@ -493,6 +452,41 @@ const validateUser = async (req, res) => {
       message: 'Utilisateur validé avec succès',
       user: userResponse,
     });
+
+    // Envoyer l'email EN ARRIÈRE-PLAN (non bloquant)
+    setImmediate(async () => {
+      try {
+        if (user.role === 'formateur') {
+          console.log(`📧 Envoi d'email de validation au formateur ${user.email}...`);
+          await sendFormateurValidatedEmail({
+            email: user.email,
+            nom: user.nom,
+            prenom: user.prenom,
+            codeFormateur,
+            adminMessage: message
+          });
+          console.log(`✅ Email de validation envoyé avec succès à ${user.email}`);
+        } else if (user.role === 'apprenant') {
+          console.log(`📧 Envoi d'email de validation à l'apprenant ${user.email}...`);
+          await sendApprenantValidatedEmail({
+            email: user.email,
+            nom: user.nom,
+            prenom: user.prenom
+          });
+          console.log(`✅ Email de validation envoyé avec succès à l'apprenant ${user.email}`);
+        }
+      } catch (mailError) {
+        console.error('❌ Erreur lors de l\'envoi de l\'email:', mailError.message);
+        console.error('📄 Détails erreur:', {
+          message: mailError.message,
+          code: mailError.code,
+          command: mailError.command
+        });
+        // L'email a échoué mais la validation est déjà faite
+      }
+    });
+
+    console.log(`🎉 Utilisateur ${user.email} validé avec succès (email en cours d'envoi)`);
 
   } catch (error) {
     console.error('❌ Erreur lors de la validation de l\'utilisateur:', error.message);
