@@ -344,21 +344,59 @@ export default function GestionUsers() {
 
   const handleValidate = async (id) => {
     try {
-      const message = window.prompt('Message à inclure dans l’email de validation (optionnel):', '');
+      console.log(`🔄 Validation de l'utilisateur ID: ${id}`);
+      
+      const message = window.prompt('Message à inclure dans l\'email de validation (optionnel):', '');
+      console.log(`📧 Message admin: "${message}"`);
+      
+      console.log(`📡 Envoi requête API: PUT /admin/users/${id}/validate`);
       const res = await API.put(`/admin/users/${id}/validate`, { message });
+      
+      console.log('✅ Réponse API:', res.data);
       toast.success('Utilisateur validé avec succès');
-      const code = res.data?.codeFormateur;
+      
+      const code = res.data?.user?.codeFormateur || res.data?.codeFormateur;
       if (code) {
+        console.log(`🔢 Code formateur généré: ${code}`);
         toast.info(`Code formateur: ${code}`, { autoClose: 7000 });
       }
+      
+      console.log('🔄 Rafraîchissement de la liste des utilisateurs...');
       fetchUsers();
+      
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Erreur lors de la validation');
+      console.error('❌ Erreur validation:', error);
+      
+      const errorMessage = error.response?.data?.message || error.message || 'Erreur lors de la validation';
+      console.error(`📝 Message d'erreur: ${errorMessage}`);
+      console.error(`📊 Status: ${error.response?.status}`);
+      console.error(`📄 Response data:`, error.response?.data);
+      
+      toast.error(errorMessage);
+      
+      // Messages d'aide spécifiques
+      if (error.response?.status === 401) {
+        toast.error('Session expirée. Veuillez vous reconnecter.', { autoClose: 5000 });
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      }
+      
+      if (error.response?.status === 400) {
+        toast.error('Cet utilisateur est déjà validé ou les données sont invalides.', { autoClose: 5000 });
+      }
+      
+      if (error.response?.status === 404) {
+        toast.error('Utilisateur non trouvé.', { autoClose: 5000 });
+      }
     }
   };
   
   const handleResendCode = async (id) => {
     try {
+      console.log(`🔄 Renvoi du code pour l'utilisateur ID: ${id}`);
+      
+      console.log(`📡 Envoi requête API: POST /admin/users/${id}/resend-code`);
       const res = await API.post(`/admin/users/${id}/resend-code`);
       const code = res.data?.codeFormateur;
       toast.success('Email de code renvoyé au formateur');

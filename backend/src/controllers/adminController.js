@@ -382,31 +382,35 @@ const validateUser = async (req, res) => {
     const { id } = req.params;
     const { message } = req.body; // Message optionnel de l'admin
 
-    console.log(`Tentative de validation de l'utilisateur ID: ${id}`);
+    console.log(`🔄 Validation de l'utilisateur ID: ${id}`);
+    console.log(`📧 Message admin: "${message || 'Aucun message'}"`);
+    console.log(`👤 Admin qui valide: ${req.user?.email || 'Non identifié'}`);
 
     // Vérifier que l'ID est valide
     if (!id || isNaN(id)) {
+      console.log(`❌ ID utilisateur invalide: ${id}`);
       return res.status(400).json({ message: 'ID utilisateur invalide' });
     }
 
     const user = await User.findByPk(parseInt(id));
     if (!user) {
-      console.log(`Utilisateur avec ID ${id} non trouvé`);
+      console.log(`❌ Utilisateur avec ID ${id} non trouvé`);
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
 
-    console.log(`Validation de l'utilisateur: ${user.nom} ${user.prenom} (${user.email}) - Rôle: ${user.role}`);
+    console.log(`👤 Utilisateur trouvé: ${user.nom} ${user.prenom} (${user.email}) - Rôle: ${user.role} - Statut: ${user.statut}`);
 
     // Vérifier si l'utilisateur est déjà validé
     if (user.statut === 'valide') {
+      console.log(`⚠️ L'utilisateur ${user.email} est déjà validé`);
       return res.status(400).json({ message: 'Cet utilisateur est déjà validé' });
     }
 
-  // Pour les formateurs: si email non vérifié, le marquer vérifié lors de la validation admin
-  if (user.role === 'formateur' && !user.emailVerified) {
-    user.emailVerified = true;
-    console.log(`Email marqué comme vérifié par admin pour le formateur ${user.email}`);
-  }
+    // Pour les formateurs: si email non vérifié, le marquer vérifié lors de la validation admin
+    if (user.role === 'formateur' && !user.emailVerified) {
+      user.emailVerified = true;
+      console.log(`📧 Email marqué comme vérifié par admin pour le formateur ${user.email}`);
+    }
 
     user.statut = 'valide';
 
@@ -414,14 +418,14 @@ const validateUser = async (req, res) => {
     if (user.role === 'formateur') {
       const codeFormateur = generateFormateurCode();
       user.codeFormateur = codeFormateur;
-      console.log(`Code formateur généré: ${codeFormateur} pour ${user.email}`);
+      console.log(`🔢 Code formateur généré: ${codeFormateur} pour ${user.email}`);
 
       // Créer une notification pour le formateur
       try {
         await notifyFormateurValidated(user.id, codeFormateur);
-        console.log(`Notification envoyée au formateur ${user.email} avec code: ${codeFormateur}`);
+        console.log(`📱 Notification envoyée au formateur ${user.email} avec code: ${codeFormateur}`);
       } catch (notifyError) {
-        console.warn('Erreur lors de l\'envoi de la notification au formateur:', notifyError);
+        console.warn('⚠️ Erreur lors de l\'envoi de la notification au formateur:', notifyError.message);
         // Ne pas bloquer la validation si la notification échoue
       }
 
@@ -438,11 +442,16 @@ const validateUser = async (req, res) => {
         console.log(`✅ Email de validation envoyé avec succès à ${user.email}`);
       } catch (mailError) {
         console.error('❌ Erreur lors de l\'envoi de l\'email de validation formateur:', mailError.message);
+        console.error('📄 Détails erreur:', {
+          message: mailError.message,
+          code: mailError.code,
+          command: mailError.command
+        });
         // Ne pas bloquer la validation si l'email échoue
       }
 
-      console.log(`Code formateur généré pour ${user.email}: ${codeFormateur}`);
-      console.log(`Message admin: ${message || 'Aucun message'}`);
+      console.log(`📋 Code formateur généré pour ${user.email}: ${codeFormateur}`);
+      console.log(`📝 Message admin: ${message || 'Aucun message'}`);
     } else if (user.role === 'apprenant') {
       // Envoi d'email à l'apprenant validé
       try {
@@ -455,19 +464,24 @@ const validateUser = async (req, res) => {
         console.log(`✅ Email de validation envoyé avec succès à l'apprenant ${user.email}`);
       } catch (mailError) {
         console.error('❌ Erreur lors de l\'envoi de l\'email de validation apprenant:', mailError.message);
+        console.error('📄 Détails erreur:', {
+          message: mailError.message,
+          code: mailError.code,
+          command: mailError.command
+        });
         // Ne pas bloquer la validation si l'email échoue
       }
     }
 
-    console.log(`Sauvegarde de l'utilisateur ${user.email} avec statut: ${user.statut}, codeFormateur: ${user.codeFormateur}`);
+    console.log(`💾 Sauvegarde de l'utilisateur ${user.email} avec statut: ${user.statut}, codeFormateur: ${user.codeFormateur || 'N/A'}`);
     await user.save();
-    console.log(`Utilisateur ${user.email} sauvegardé avec succès`);
-    console.log(`Utilisateur ${user.email} validé avec succès`);
+    console.log(`✅ Utilisateur ${user.email} sauvegardé avec succès`);
+    console.log(`🎉 Utilisateur ${user.email} validé avec succès`);
 
     const userResponse = user.toJSON();
     delete userResponse.password;
 
-    console.log(`Réponse de validation - User:`, {
+    console.log(`📤 Réponse de validation - User:`, {
       id: userResponse.id,
       email: userResponse.email,
       role: userResponse.role,
@@ -478,17 +492,13 @@ const validateUser = async (req, res) => {
     res.json({
       message: 'Utilisateur validé avec succès',
       user: userResponse,
-      codeFormateur: user.role === 'formateur' ? user.codeFormateur : undefined
     });
-  } catch (error) {
-    console.error('Erreur lors de la validation utilisateur:', error);
-    console.error('Détails de l\'erreur:', error.message);
-    console.error('Stack:', error.stack);
 
-    // Retourner un message d'erreur plus détaillé
-    const errorMessage = error.message || 'Erreur serveur lors de la validation';
-    res.status(500).json({
-      message: `Erreur lors de la validation: ${errorMessage}`,
+  } catch (error) {
+    console.error('❌ Erreur lors de la validation de l\'utilisateur:', error.message);
+    console.error('📄 Stack error:', error.stack);
+    res.status(500).json({ 
+      message: `Erreur lors de la validation: ${error.message}`,
       details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
