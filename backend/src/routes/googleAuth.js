@@ -21,7 +21,7 @@ router.get('/google', (req, res, next) => {
 
 // Callback Google après authentification
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: 'http://localhost:3000/login?error=google_failed', session: false }),
+  passport.authenticate('google', { failureRedirect: 'https://formations-cfp.netlify.app/login?error=google_failed', session: false }),
   async (req, res) => {
     try {
       // Générer le token JWT
@@ -37,7 +37,7 @@ router.get('/google/callback',
 
       // Rediriger vers le frontend avec le token
       const created = req.user && req.user._createdViaGoogle ? 1 : 0;
-      const redirectUrl = `http://localhost:3000/auth/google/success?token=${token}&created=${created}&user=${encodeURIComponent(JSON.stringify({
+      const redirectUrl = `https://formations-cfp.netlify.app/auth/google/success?token=${token}&created=${created}&user=${encodeURIComponent(JSON.stringify({
         id: req.user.id,
         email: req.user.email,
         nom: req.user.nom,
@@ -49,7 +49,7 @@ router.get('/google/callback',
       res.redirect(redirectUrl);
     } catch (error) {
       console.error('❌ Erreur callback Google:', error);
-      res.redirect('http://localhost:3000/login?error=server_error');
+      res.redirect('https://formations-cfp.netlify.app/login?error=server_error');
     }
   }
 );
