@@ -133,10 +133,10 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full overflow-x-hidden">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white text-sm py-2 shadow-md">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white text-sm py-2 shadow-md w-full">
+        <div className="w-full max-w-full px-4 flex flex-col md:flex-row justify-between items-center">
           <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 mb-2 md:mb-0">
             <a 
               href="tel:+261XXXXXXXXX" 
@@ -183,8 +183,8 @@ const Home = () => {
       </div>
 
       {/* Header */}
-      <header className="bg-white shadow-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3">
+      <header className="bg-white shadow-lg sticky top-0 z-50 w-full">
+        <div className="w-full max-w-full px-4 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Link to="/" className="flex items-center group">
@@ -361,7 +361,7 @@ const Home = () => {
           }}></div>
         </div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="w-full max-w-full px-4 relative z-10">
           <motion.div 
             className="max-w-4xl"
             initial={{ opacity: 0, y: 20 }}
@@ -453,8 +453,8 @@ const Home = () => {
       </section>
 
       {/* Formations Section */}
-      <section id="formations" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <section id="formations" className="py-20 bg-white w-full">
+        <div className="w-full max-w-full px-4">
           <motion.div 
             className="text-center mb-16 max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
@@ -527,12 +527,12 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section id="a-propos" className="py-20 bg-white relative overflow-hidden">
+      <section id="a-propos" className="py-20 bg-white relative overflow-hidden w-full">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-bl from-blue-50 to-transparent -z-10"></div>
         <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
         
-        <div className="container mx-auto px-4">
+        <div className="w-full max-w-full px-4">
           <motion.div 
             className="flex flex-col lg:flex-row items-center"
             initial={{ opacity: 0 }}
@@ -635,8 +635,8 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section id="temoignages" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <section id="temoignages" className="py-20 bg-white w-full">
+        <div className="w-full max-w-full px-4">
           <motion.div 
             className="text-center mb-16 max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
@@ -723,7 +723,7 @@ const Home = () => {
           <div className="absolute transform -rotate-45 -right-20 bottom-20 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-xl"></div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="w-full max-w-full px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -760,7 +760,7 @@ const Home = () => {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white pt-16 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-full px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             <div>
               <div className="flex items-center mb-4">

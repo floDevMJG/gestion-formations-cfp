@@ -67,8 +67,8 @@ function App() {
   const isLoginRoute = location.pathname === '/login';
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <main className={isAuthenticated && !isAdminRoute && !isFormateurRoute && !isEtudiantRoute ? "container mx-auto px-4 py-8" : ""}>
+    <div className="min-h-screen bg-gray-100 w-full overflow-x-hidden">
+      <main className={isAuthenticated && !isAdminRoute && !isFormateurRoute && !isEtudiantRoute ? "container mx-auto px-4 py-8 w-full" : "w-full"}>
         <Routes>
           {/* Route racine - Toujours afficher la page d'accueil */}
           <Route path="/" element={<Home />} />

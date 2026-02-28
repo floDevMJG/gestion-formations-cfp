@@ -47,7 +47,7 @@ const getAllAteliers = async (req, res) => {
     const result = await Promise.all(rows.map(async (a) => {
       if (a.formateur_id) {
         const fs = await db.query(
-          'SELECT nom, prenom FROM Users WHERE id = ?',
+          'SELECT nom, prenom FROM users WHERE id = ?',
           { replacements: [a.formateur_id], type: QueryTypes.SELECT }
         );
         const f = fs[0];
@@ -105,7 +105,7 @@ const getAtelierById = async (req, res) => {
     }
     if (atelier.formateur_id) {
       const fs = await db.query(
-        'SELECT nom, prenom FROM Users WHERE id = ?',
+        'SELECT nom, prenom FROM users WHERE id = ?',
         { replacements: [atelier.formateur_id], type: QueryTypes.SELECT }
       );
       const f = fs[0];

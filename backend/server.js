@@ -736,7 +736,7 @@ app.post('/api/auth/register', upload.single('photo'), async (req, res) => {
   try {
     // Vérifier si l'email est déjà utilisé
     const [existingUser] = await db.execute(
-      'SELECT id FROM Users WHERE email = ?',
+      'SELECT id FROM users WHERE email = ?',
       [email]
     );
     
