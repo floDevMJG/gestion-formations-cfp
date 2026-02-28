@@ -6,33 +6,7 @@ const config = require('../config/config');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 async function sendMail({ to, subject, html, text }) {
-  const apiKey = process.env.SENDGRID_API_KEY || config.email.sendgridApiKey;
-  if (apiKey) {
-    try {
-      sgMail.setApiKey(apiKey);
-    } catch (e) {
-      console.error('❌ Impossible de définir la clé SendGrid:', e.message);
-    }
-    const msg = {
-      to,
-      from: {
-        email: process.env.EMAIL_FROM || config.email.from || 'no-reply@cfp-charpentier-marine.com',
-        name: 'CFP Charpentier Marine'
-      },
-      subject,
-      text,
-      html
-    };
-    try {
-      const result = await sgMail.send(msg);
-      console.log('✅ Email SendGrid envoyé avec succès');
-      return result;
-    } catch (error) {
-      console.error('❌ Erreur SendGrid:', error.response?.body || error.message);
-      // Fallback vers SMTP si disponible
-    }
-  }
-  // Fallback SMTP (Gmail/Autre) via config.emailBackup
+  // Utiliser Gmail directement comme service principal
   const backup = config.emailBackup || {};
   if (backup?.auth?.user && backup?.auth?.pass) {
     try {
@@ -47,16 +21,39 @@ async function sendMail({ to, subject, html, text }) {
         }
       });
       const info = await transporter.sendMail({
-        from: backup.auth.user,
+        from: `${backup.auth.user}`,
         to,
         subject,
         text,
         html
       });
-      console.log('✅ Email SMTP (fallback) envoyé:', info.messageId);
+      console.log('✅ Email Gmail envoyé avec succès:', info.messageId);
       return info;
     } catch (smtpErr) {
-      console.error('❌ Erreur SMTP fallback:', smtpErr.message);
+      console.error('❌ Erreur Gmail:', smtpErr.message);
+    }
+  }
+
+  // Fallback SendGrid si configuré
+  const apiKey = process.env.SENDGRID_API_KEY || config.email.sendgridApiKey;
+  if (apiKey) {
+    try {
+      sgMail.setApiKey(apiKey);
+      const msg = {
+        to,
+        from: {
+          email: process.env.EMAIL_FROM || config.email.from || 'no-reply@cfp-charpentier-marine.com',
+          name: 'CFP Charpentier Marine'
+        },
+        subject,
+        text,
+        html
+      };
+      const result = await sgMail.send(msg);
+      console.log('✅ Email SendGrid envoyé avec succès');
+      return result;
+    } catch (error) {
+      console.error('❌ Erreur SendGrid:', error.response?.body || error.message);
     }
   }
   try {

@@ -7,13 +7,13 @@ const multer = require('multer');
 const fs = require('fs');
 const passport = require('./src/config/passport');
 const app = express();
-const PORT = 5000; // Forcer le port 5000
+const PORT = process.env.PORT || 5000;
 
-// Configuration de la base de données
+// Configuration de la base de données pour Railway
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASS || process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'gestion_formations',
   charset: 'utf8mb4'
 };
@@ -21,11 +21,11 @@ const dbConfig = {
 // Configuration de multer pour le téléchargement de fichiers
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    const multerUploadDir = path.join(__dirname, 'uploads');
+    if (!fs.existsSync(multerUploadDir)) {
+      fs.mkdirSync(multerUploadDir, { recursive: true });
     }
-    cb(null, uploadDir);
+    cb(null, multerUploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -84,13 +84,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Créer le dossier uploads s'il n'existe pas
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Servir les fichiers statiques du dossier 'uploads'
-app.use('/uploads', express.static(uploadDir));
+app.use('/uploads', express.static(uploadsDir));
 
 // Route racine
 app.get('/', (req, res) => {
@@ -693,19 +693,16 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Configuration de multer pour le téléchargement de fichiers
-const multer = require('multer');
-const fs = require('fs');
-
+// Configuration de multer pour le téléchargement de fichiers (déjà défini plus haut)
 // Créer le dossier uploads s'il n'existe pas
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir2 = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir2)) {
+  fs.mkdirSync(uploadDir2, { recursive: true });
 }
 
-const storage = multer.diskStorage({
+const storage2 = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir);
+    cb(null, uploadDir2);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -713,8 +710,8 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
-  storage: storage,
+const upload2 = multer({ 
+  storage: storage2,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png|gif/;
@@ -730,7 +727,7 @@ const upload = multer({
 });
 
 // Route d'inscription
-app.post('/api/auth/register', upload.single('photo'), async (req, res) => {
+app.post('/api/auth/register', upload2.single('photo'), async (req, res) => {
   const { nom, prenom, email, password, role, telephone, adresse } = req.body;
   
   try {
@@ -841,7 +838,12 @@ async function startServer() {
   await connectDB();
   
   app.listen(PORT, () => {
-    console.log(`🚀 Serveur backend démarré sur http://localhost:${PORT}`);
+    console.log(`🚀 Serveur backend démarré sur le port ${PORT}`);
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`🌐 Environnement de production`);
+    } else {
+      console.log(`🌐 Serveur local: http://localhost:${PORT}`);
+    }
     console.log('📊 API disponibles:');
     console.log('   GET /api/statistics');
     console.log('   GET /api/admin/stats');
