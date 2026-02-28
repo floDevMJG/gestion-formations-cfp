@@ -2,7 +2,7 @@
 const { User, Formation, Inscription, Atelier } = require('../models');
 const bcrypt = require('bcryptjs');
 const { notifyFormateurValidated } = require('./notificationController');
-const { sendFormateurValidatedEmail, sendApprenantValidatedEmail } = require('../utils/sendgrid-mailer');
+const { sendFormateurValidatedEmail, sendApprenantValidatedEmail } = require('../services/emailService');
 
 // Gestion des utilisateurs
 const getAllUsers = async (req, res) => {
@@ -427,6 +427,7 @@ const validateUser = async (req, res) => {
 
       // Envoi d'email au formateur avec le code
       try {
+        console.log(`📧 Envoi d'email de validation au formateur ${user.email}...`);
         await sendFormateurValidatedEmail({
           email: user.email,
           nom: user.nom,
@@ -434,9 +435,9 @@ const validateUser = async (req, res) => {
           codeFormateur,
           adminMessage: message
         });
-        console.log(`Email de validation envoyé à ${user.email}`);
+        console.log(`✅ Email de validation envoyé avec succès à ${user.email}`);
       } catch (mailError) {
-        console.warn('Erreur lors de l\'envoi de l\'email de validation formateur:', mailError);
+        console.error('❌ Erreur lors de l\'envoi de l\'email de validation formateur:', mailError.message);
         // Ne pas bloquer la validation si l'email échoue
       }
 
@@ -445,14 +446,15 @@ const validateUser = async (req, res) => {
     } else if (user.role === 'apprenant') {
       // Envoi d'email à l'apprenant validé
       try {
+        console.log(`📧 Envoi d'email de validation à l'apprenant ${user.email}...`);
         await sendApprenantValidatedEmail({
           email: user.email,
           nom: user.nom,
           prenom: user.prenom
         });
-        console.log(`Email de validation envoyé à l'apprenant ${user.email}`);
+        console.log(`✅ Email de validation envoyé avec succès à l'apprenant ${user.email}`);
       } catch (mailError) {
-        console.warn('Erreur lors de l\'envoi de l\'email de validation apprenant:', mailError);
+        console.error('❌ Erreur lors de l\'envoi de l\'email de validation apprenant:', mailError.message);
         // Ne pas bloquer la validation si l'email échoue
       }
     }

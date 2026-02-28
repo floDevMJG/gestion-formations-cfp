@@ -4,6 +4,11 @@ FROM node:18-alpine
 # Définir le répertoire de travail
 WORKDIR /app
 
+# Installer les dépendances système pour nodemailer
+RUN apk add --no-cache \
+    ca-certificates \
+    && update-ca-certificates
+
 # Copier les fichiers de configuration
 COPY package*.json ./
 
@@ -23,5 +28,5 @@ EXPOSE 5000
 ENV NODE_ENV=production
 ENV PORT=5000
 
-# Commande de démarrage
-CMD ["npm", "start"]
+# Commande de démarrage avec monitoring
+CMD ["sh", "-c", "npm start"]

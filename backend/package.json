@@ -7,7 +7,9 @@
     "start-simple": "node src/app.js",
     "dev": "nodemon src/app.js",
     "create-admin": "node create-admin.js",
-    "fix-sync": "node fix-sync.js"
+    "fix-sync": "node fix-sync.js",
+    "health": "node scripts/health-check.js",
+    "test-email": "node test-email-production.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",

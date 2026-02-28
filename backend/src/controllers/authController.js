@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { notifyNewFormateur, notifyNewStudent } = require('./notificationController');
-const { sendEmailVerification } = require('../utils/sendgrid-mailer');
+const { sendEmailVerification } = require('../services/emailService');
 
 const register = async (req, res) => {
   try {
