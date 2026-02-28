@@ -405,20 +405,45 @@ const validateUser = async (req, res) => {
       return res.status(400).json({ message: 'Cet utilisateur est déjà validé' });
     }
 
-    // Mise à jour rapide
-    const updates = { statut: 'valide' };
-    let codeFormateur = null;
-
+    // Mise à jour complète avec save() pour garantir tous les champs
     if (user.role === 'formateur') {
       codeFormateur = generateFormateurCode();
-      updates.codeFormateur = codeFormateur;
+      user.codeFormateur = codeFormateur;
       if (!user.emailVerified) {
-        updates.emailVerified = true;
+        user.emailVerified = true;
+        console.log(`📧 Email marqué comme vérifié pour ${user.email}`);
       }
+      console.log(`🔢 Code formateur généré: ${codeFormateur}`);
     }
-
-    // Sauvegarde en une seule opération
-    await user.update(updates);
+    
+    user.statut = 'valide';
+    
+    // Logs de vérification AVANT sauvegarde
+    console.log(`📋 Données utilisateur AVANT sauvegarde:`, {
+      id: user.id,
+      nom: user.nom,
+      prenom: user.prenom,
+      email: user.email,
+      role: user.role,
+      statut: user.statut,
+      codeFormateur: user.codeFormateur,
+      emailVerified: user.emailVerified
+    });
+    
+    // Sauvegarde complète avec save()
+    await user.save();
+    
+    // Logs de vérification APRÈS sauvegarde
+    console.log(`📋 Données utilisateur APRÈS sauvegarde:`, {
+      id: user.id,
+      nom: user.nom,
+      prenom: user.prenom,
+      email: user.email,
+      role: user.role,
+      statut: user.statut,
+      codeFormateur: user.codeFormateur,
+      emailVerified: user.emailVerified
+    });
 
     // Préparation de la réponse immédiate
     const userResponse = user.toJSON();
