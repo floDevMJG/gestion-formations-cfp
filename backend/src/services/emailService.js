@@ -63,12 +63,29 @@ class EmailService {
         html
       };
 
+      console.log('📧 Envoi d\'email:', {
+        to,
+        subject,
+        from: mailOptions.from
+      });
+
       const result = await this.transporter.sendMail(mailOptions);
       console.log('✅ Email envoyé avec succès:', result.messageId);
+      console.log('📨 Détails:', {
+        messageId: result.messageId,
+        envelope: result.envelope,
+        accepted: result.accepted,
+        rejected: result.rejected
+      });
       return result;
       
     } catch (error) {
-      console.error('❌ Erreur envoi email:', error.message);
+      console.error('❌ Erreur envoi email:', {
+        message: error.message,
+        code: error.code,
+        command: error.command,
+        response: error.response
+      });
       throw error;
     }
   }
