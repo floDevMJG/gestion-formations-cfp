@@ -376,124 +376,91 @@ const resendFormateurCodeEmail = async (req, res) => {
   }
 };
 
-// Validation des utilisateurs (pour les apprenants et formateurs)
+// Validation des utilisateurs (pour les apprenants et formateurs) - VERSION ULTRA RAPIDE
 const validateUser = async (req, res) => {
+  const startTime = Date.now();
+  
   try {
     const { id } = req.params;
     const { message } = req.body; // Message optionnel de l'admin
 
-    console.log(`🔄 Validation de l'utilisateur ID: ${id}`);
-    console.log(`📧 Message admin: "${message || 'Aucun message'}"`);
-    console.log(`👤 Admin qui valide: ${req.user?.email || 'Non identifié'}`);
+    console.log(`⚡ Validation ultra-rapide ID: ${id}`);
 
-    // Vérifier que l'ID est valide
+    // Validation rapide de l'ID
     if (!id || isNaN(id)) {
-      console.log(`❌ ID utilisateur invalide: ${id}`);
       return res.status(400).json({ message: 'ID utilisateur invalide' });
     }
 
-    const user = await User.findByPk(parseInt(id));
+    // Recherche utilisateur optimisée
+    const user = await User.findByPk(parseInt(id), {
+      attributes: ['id', 'nom', 'prenom', 'email', 'role', 'statut', 'emailVerified', 'codeFormateur']
+    });
+    
     if (!user) {
-      console.log(`❌ Utilisateur avec ID ${id} non trouvé`);
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
 
-    console.log(`👤 Utilisateur trouvé: ${user.nom} ${user.prenom} (${user.email}) - Rôle: ${user.role} - Statut: ${user.statut}`);
-
-    // Vérifier si l'utilisateur est déjà validé
+    // Vérification rapide du statut
     if (user.statut === 'valide') {
-      console.log(`⚠️ L'utilisateur ${user.email} est déjà validé`);
       return res.status(400).json({ message: 'Cet utilisateur est déjà validé' });
     }
 
-    // Pour les formateurs: si email non vérifié, le marquer vérifié lors de la validation admin
-    if (user.role === 'formateur' && !user.emailVerified) {
-      user.emailVerified = true;
-      console.log(`📧 Email marqué comme vérifié par admin pour le formateur ${user.email}`);
-    }
-
-    user.statut = 'valide';
-
-    // Si c'est un formateur, générer un code spécial
+    // Mise à jour rapide
+    const updates = { statut: 'valide' };
     let codeFormateur = null;
+
     if (user.role === 'formateur') {
       codeFormateur = generateFormateurCode();
-      user.codeFormateur = codeFormateur;
-      console.log(`🔢 Code formateur généré: ${codeFormateur} pour ${user.email}`);
-
-      // Créer une notification pour le formateur
-      try {
-        await notifyFormateurValidated(user.id, codeFormateur);
-        console.log(`📱 Notification envoyée au formateur ${user.email} avec code: ${codeFormateur}`);
-      } catch (notifyError) {
-        console.warn('⚠️ Erreur lors de l\'envoi de la notification au formateur:', notifyError.message);
-        // Ne pas bloquer la validation si la notification échoue
+      updates.codeFormateur = codeFormateur;
+      if (!user.emailVerified) {
+        updates.emailVerified = true;
       }
     }
 
-    // Sauvegarder l'utilisateur AVANT d'envoyer l'email
-    console.log(`💾 Sauvegarde de l'utilisateur ${user.email} avec statut: ${user.statut}, codeFormateur: ${codeFormateur || 'N/A'}`);
-    await user.save();
-    console.log(`✅ Utilisateur ${user.email} sauvegardé avec succès`);
+    // Sauvegarde en une seule opération
+    await user.update(updates);
 
+    // Préparation de la réponse immédiate
     const userResponse = user.toJSON();
     delete userResponse.password;
 
     // Envoyer la réponse API IMMÉDIATEMENT
-    console.log(`📤 Réponse de validation envoyée - User:`, {
-      id: userResponse.id,
-      email: userResponse.email,
-      role: userResponse.role,
-      statut: userResponse.statut,
-      codeFormateur: userResponse.codeFormateur
-    });
-
     res.json({
       message: 'Utilisateur validé avec succès',
       user: userResponse,
     });
 
-    // Envoyer l'email EN ARRIÈRE-PLAN (non bloquant)
-    setImmediate(async () => {
-      try {
-        if (user.role === 'formateur') {
-          console.log(`📧 Envoi d'email de validation au formateur ${user.email}...`);
-          await sendFormateurValidatedEmail({
-            email: user.email,
-            nom: user.nom,
-            prenom: user.prenom,
-            codeFormateur,
-            adminMessage: message
-          });
-          console.log(`✅ Email de validation envoyé avec succès à ${user.email}`);
-        } else if (user.role === 'apprenant') {
-          console.log(`📧 Envoi d'email de validation à l'apprenant ${user.email}...`);
-          await sendApprenantValidatedEmail({
-            email: user.email,
-            nom: user.nom,
-            prenom: user.prenom
-          });
-          console.log(`✅ Email de validation envoyé avec succès à l'apprenant ${user.email}`);
-        }
-      } catch (mailError) {
-        console.error('❌ Erreur lors de l\'envoi de l\'email:', mailError.message);
-        console.error('📄 Détails erreur:', {
-          message: mailError.message,
-          code: mailError.code,
-          command: mailError.command
-        });
-        // L'email a échoué mais la validation est déjà faite
-      }
-    });
+    console.log(`⚡ Validation terminée en ${Date.now() - startTime}ms`);
 
-    console.log(`🎉 Utilisateur ${user.email} validé avec succès (email en cours d'envoi)`);
+    // Email en arrière-plan TOTALEMENT asynchrone
+    if (user.role === 'formateur') {
+      setImmediate(() => {
+        sendFormateurValidatedEmail({
+          email: user.email,
+          nom: user.nom,
+          prenom: user.prenom,
+          codeFormateur,
+          adminMessage: message
+        }).catch(err => {
+          console.error('❌ Email formateur échoué:', err.message);
+        });
+      });
+    } else if (user.role === 'apprenant') {
+      setImmediate(() => {
+        sendApprenantValidatedEmail({
+          email: user.email,
+          nom: user.nom,
+          prenom: user.prenom
+        }).catch(err => {
+          console.error('❌ Email apprenant échoué:', err.message);
+        });
+      });
+    }
 
   } catch (error) {
-    console.error('❌ Erreur lors de la validation de l\'utilisateur:', error.message);
-    console.error('📄 Stack error:', error.stack);
+    console.error('❌ Erreur validation:', error.message);
     res.status(500).json({ 
-      message: `Erreur lors de la validation: ${error.message}`,
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      message: `Erreur lors de la validation: ${error.message}`
     });
   }
 };

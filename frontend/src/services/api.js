@@ -11,7 +11,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 8000, // 8 secondes timeout pour toutes les requêtes
+  timeout: 15000, // 15 secondes timeout pour les requêtes lentes
 });
 
 // Ajout automatique du token d'authentification
