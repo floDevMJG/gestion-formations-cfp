@@ -307,7 +307,7 @@ INSERT INTO `formations` (`id`, `titre`, `description`, `duree`, `createdAt`, `u
 --
 
 CREATE TABLE `inscriptions` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `userId` int(11) DEFAULT NULL,
   `formationId` int(11) DEFAULT NULL,
   `dateInscription` datetime DEFAULT NULL,
@@ -330,10 +330,10 @@ INSERT INTO `inscriptions` (`id`, `userId`, `formationId`, `dateInscription`, `m
 (1, 23, 1, '2026-01-29 10:05:22', NULL, NULL, NULL, 'paye', NULL, '2026-01-29 10:05:22', '2026-02-16 23:48:41', 'validee', NULL),
 (2, 23, 2, '2026-01-29 10:05:22', NULL, NULL, NULL, 'en_attente', NULL, '2026-01-29 10:05:22', '2026-02-16 10:26:57', 'validee', NULL),
 (3, 18, 1, '2026-02-04 06:30:27', 500000.00, 'mobile', NULL, 'paye', 'PAY-1770186627651-18-1', '2026-02-04 06:30:27', '2026-02-16 10:26:11', 'validee', NULL),
-(4, 1, 1, '2026-02-12 00:31:30', 450000.00, 'mobile', NULL, 'en_attente', NULL, '0000-00-00 00:00:00', '2026-02-16 10:26:20', 'validee', NULL),
-(5, 1, 1, '2026-02-12 00:48:23', 450000.00, 'mobile', NULL, 'en_attente', NULL, '0000-00-00 00:00:00', '2026-02-20 15:16:50', 'validee', NULL),
+/* Remplacement des 0000-00-00 par la date de l'inscription */
+(4, 1, 1, '2026-02-12 00:31:30', 450000.00, 'mobile', NULL, 'en_attente', NULL, '2026-02-12 00:31:30', '2026-02-16 10:26:20', 'validee', NULL),
+(5, 1, 1, '2026-02-12 00:48:23', 450000.00, 'mobile', NULL, 'en_attente', NULL, '2026-02-12 00:48:23', '2026-02-20 15:16:50', 'validee', NULL),
 (6, 18, 2, '2026-02-20 11:52:29', 1000000.00, 'classic', NULL, 'en_attente', 'PAY-1771588349523-18-2', '2026-02-20 11:52:29', '2026-02-20 14:22:02', 'validee', NULL);
-
 -- --------------------------------------------------------
 
 --
