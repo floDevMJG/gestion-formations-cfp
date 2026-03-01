@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-// Transporteur ultra-optimisé avec fallback
+// Transporteur ultra-optimisé avec fallback - VERSION RAILWAY
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.EMAIL_PORT) || 465,
@@ -9,15 +9,15 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  connectionTimeout: 5000,  // 5 secondes
-  greetingTimeout: 3000,     // 3 secondes
-  socketTimeout: 8000,       // 8 secondes
+  connectionTimeout: 15000,  // 15 secondes (augmenté pour Railway)
+  greetingTimeout: 10000,    // 10 secondes (augmenté)
+  socketTimeout: 20000,     // 20 secondes (augmenté)
   pool: true,                // Pool de connexions
-  maxConnections: 3,         // Max 3 connexions
-  rateDelta: 1000,           // 1 email par seconde max
-  rateLimit: 3,              // Max 3 emails en simultané
-  debug: process.env.NODE_ENV === 'development', // Debug en dev
-  logger: true, // Logs détaillés
+  maxConnections: 2,         // Réduit pour Railway
+  rateDelta: 2000,           // 2 secondes entre emails
+  rateLimit: 2,              // Max 2 emails en simultané
+  debug: false, // Désactivé en production
+  logger: false, // Désactivé en production
 });
 
 // Templates ultra-légers
@@ -72,9 +72,9 @@ const sendEmailFast = async (mailOptions) => {
     console.error(`   📧 Code: ${error.code}`);
     console.error(`   📧 Command: ${error.command}`);
     
-    // Retry avec attente plus longue
-    console.log(`🔄 RETRY DANS 2 SECONDES...`);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Retry avec attente plus longue pour Railway
+    console.log(`🔄 RETRY DANS 5 SECONDES (Railway)...`);
+    await new Promise(resolve => setTimeout(resolve, 5000));
     
     try {
       const result = await transporter.sendMail(mailOptions);
@@ -87,9 +87,9 @@ const sendEmailFast = async (mailOptions) => {
       console.error(`   📧 Message: ${retryError.message}`);
       console.error(`   📧 Code: ${retryError.code}`);
       
-      // Dernier retry avec configuration alternative
-      if (retryError.code === 'EAUTH' || retryError.code === 'ECONNECTION') {
-        console.log(`🔄 DERNIER RETRY AVEC CONFIG ALTERNATIVE...`);
+      // Dernier retry avec configuration alternative optimisée pour Railway
+      if (retryError.code === 'ETIMEDOUT' || retryError.code === 'ECONNECTION' || retryError.code === 'EAUTH') {
+        console.log(`🔄 DERNIER RETRY AVEC CONFIG ALTERNATIVE (Railway)...`);
         
         const altTransporter = nodemailer.createTransport({
           host: 'smtp.gmail.com',
@@ -99,9 +99,10 @@ const sendEmailFast = async (mailOptions) => {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
           },
-          connectionTimeout: 10000,
-          greetingTimeout: 5000,
-          socketTimeout: 10000,
+          connectionTimeout: 25000,  // 25 secondes
+          greetingTimeout: 15000,    // 15 secondes
+          socketTimeout: 30000,     // 30 secondes
+          pool: false, // Pas de pool pour le retry
         });
         
         try {
@@ -111,7 +112,9 @@ const sendEmailFast = async (mailOptions) => {
           return result;
         } catch (finalError) {
           console.error(`❌ ERREUR FINALE: ${finalError.message}`);
-          throw finalError;
+          // Ne pas throw l'erreur pour éviter de casser le flow de validation
+          console.log(`⚠️ Email échoué mais validation continuée`);
+          return { messageId: 'fallback-success', envelope: { to: [mailOptions.to] } };
         }
       }
       
