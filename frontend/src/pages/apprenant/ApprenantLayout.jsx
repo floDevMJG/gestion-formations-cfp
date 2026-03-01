@@ -40,7 +40,7 @@ export default function ApprenantLayout() {
   ];
 
   return (
-    <div className="h-screen bg-app-gradient flex">
+    <div className="min-h-screen bg-app-gradient flex">
       {/* Sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64 bg-gradient-to-b from-blue-800 to-blue-900 text-white shadow-xl">

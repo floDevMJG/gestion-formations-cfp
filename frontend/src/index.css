@@ -3,69 +3,11 @@
 @tailwind utilities;
 
 html, body, #root {
-  height: 100vh !important;
-  min-height: 100vh !important;
-  width: 100vw !important;
-  max-width: 100vw !important;
-  overflow-x: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-}
-
-* {
-  box-sizing: inherit !important;
-}
-
-*, *::before, *::after {
-  box-sizing: inherit !important;
+  height: 100%;
 }
 body { 
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   @apply bg-app-gradient;
-}
-
-/* Full screen utilities */
-.full-screen {
-  height: 100vh !important;
-  width: 100vw !important;
-  overflow-x: hidden !important;
-}
-
-.full-height {
-  height: 100vh !important;
-  min-height: 100vh !important;
-}
-
-.full-width {
-  width: 100vw !important;
-  max-width: 100vw !important;
-}
-
-/* Remove container limitations */
-.container-full {
-  width: 100% !important;
-  max-width: none !important;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-}
-
-/* Forcer tous les conteneurs à être full width */
-.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
-  max-width: none !important;
-  width: 100% !important;
-}
-
-/* Forcer toutes les classes max-w à ne pas limiter */
-[class*="max-w"] {
-  max-width: none !important;
-}
-
-/* Forcer les éléments principaux à être full width */
-main, section, header, footer, nav, aside {
-  width: 100% !important;
-  max-width: none !important;
 }
 
 :root {
@@ -113,68 +55,4 @@ main, section, header, footer, nav, aside {
 }
 .animate-pulse-soft {
   animation: pulseSoft 2.5s ease-in-out infinite;
-}
-
-/* SweetAlert2 Custom Styles */
-.swal2-container {
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-}
-
-.swal2-popup {
-  border-radius: 0.75rem !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-  backdrop-filter: blur(8px);
-}
-
-.swal2-toast {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: saturate(180%) blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 0.75rem !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-}
-
-.swal2-success {
-  background-color: #10b981 !important;
-}
-
-.swal2-error {
-  background-color: #ef4444 !important;
-}
-
-.swal2-title {
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  color: #1f2937 !important;
-}
-
-.swal2-html-container {
-  font-size: 0.875rem !important;
-  color: #6b7280 !important;
-  margin-top: 0.25rem !important;
-}
-
-.swal2-timer-progress-bar {
-  background: linear-gradient(to right, #2563eb, #7c3aed) !important;
-  height: 3px !important;
-}
-
-/* Animation pour les toasts */
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.swal2-toast.swal2-show {
-  animation: slideInRight 0.3s ease-out;
-}
-
-.swal2-toast.swal2-hide {
-  animation: slideInRight 0.3s ease-out reverse;
 }

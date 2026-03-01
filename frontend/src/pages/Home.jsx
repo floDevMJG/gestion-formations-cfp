@@ -133,7 +133,7 @@ const Home = () => {
   };
 
   return (
-    <div className="h-screen bg-white w-full overflow-x-hidden" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div className="min-h-screen bg-white w-full overflow-x-hidden">
       {/* Top Bar */}
       <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white text-sm py-2 shadow-md w-full">
         <div className="w-full max-w-full px-4 flex flex-col md:flex-row justify-between items-center">
