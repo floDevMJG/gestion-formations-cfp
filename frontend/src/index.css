@@ -3,14 +3,19 @@
 @tailwind utilities;
 
 html, body, #root {
-  height: 100%;
+  height: 100vh;
   min-height: 100vh;
-  width: 100%;
+  width: 100vw;
   max-width: 100vw;
   overflow-x: hidden;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  position: relative;
+}
+
+* {
+  box-sizing: inherit;
 }
 
 *, *::before, *::after {
@@ -19,6 +24,31 @@ html, body, #root {
 body { 
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   @apply bg-app-gradient;
+}
+
+/* Full screen utilities */
+.full-screen {
+  height: 100vh !important;
+  width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+.full-height {
+  height: 100vh !important;
+  min-height: 100vh !important;
+}
+
+.full-width {
+  width: 100vw !important;
+  max-width: 100vw !important;
+}
+
+/* Remove container limitations */
+.container-full {
+  width: 100% !important;
+  max-width: none !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
 }
 
 :root {
