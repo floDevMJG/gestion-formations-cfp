@@ -2,7 +2,7 @@
 const { User, Formation, Inscription, Atelier } = require('../models');
 const bcrypt = require('bcryptjs');
 const { notifyFormateurValidated } = require('./notificationController');
-const { sendFormateurValidatedEmail, sendApprenantValidatedEmail } = require('../services/emailService');
+const { sendFormateurValidatedEmail, sendApprenantValidatedEmail } = require('../services/emailServiceResend');
 
 // Gestion des utilisateurs
 const getAllUsers = async (req, res) => {
