@@ -67,8 +67,8 @@ function App() {
   const isLoginRoute = location.pathname === '/login';
 
   return (
-    <div className="full-screen bg-gray-100">
-      <main className={isAuthenticated && !isAdminRoute && !isFormateurRoute && !isEtudiantRoute ? "container-full px-4 py-8" : "w-full"}>
+    <div className="full-screen bg-gray-100" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <main className={isAuthenticated && !isAdminRoute && !isFormateurRoute && !isEtudiantRoute ? "container-full px-4 py-8" : "w-full"} style={{ width: '100%', maxWidth: 'none' }}>
         <Routes>
           {/* Route racine - Toujours afficher la page d'accueil */}
           <Route path="/" element={<Home />} />

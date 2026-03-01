@@ -3,23 +3,23 @@
 @tailwind utilities;
 
 html, body, #root {
-  height: 100vh;
-  min-height: 100vh;
-  width: 100vw;
-  max-width: 100vw;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  position: relative;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  position: relative !important;
 }
 
 * {
-  box-sizing: inherit;
+  box-sizing: inherit !important;
 }
 
 *, *::before, *::after {
-  box-sizing: inherit;
+  box-sizing: inherit !important;
 }
 body { 
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
@@ -49,6 +49,23 @@ body {
   max-width: none !important;
   padding-left: 1rem !important;
   padding-right: 1rem !important;
+}
+
+/* Forcer tous les conteneurs à être full width */
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Forcer toutes les classes max-w à ne pas limiter */
+[class*="max-w"] {
+  max-width: none !important;
+}
+
+/* Forcer les éléments principaux à être full width */
+main, section, header, footer, nav, aside {
+  width: 100% !important;
+  max-width: none !important;
 }
 
 :root {
